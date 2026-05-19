@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="100" fill="#06060a"/>
+  <!-- Timer ring -->
+  <circle cx="256" cy="256" r="170" fill="none" stroke="#16161f" stroke-width="28"/>
+  <circle cx="256" cy="256" r="170" fill="none" stroke="#FFD600" stroke-width="28"
+    stroke-linecap="round" stroke-dasharray="535 535" stroke-dashoffset="134"
+    transform="rotate(-90 256 256)"/>
+  <!-- Lightning bolt -->
+  <path d="M276 110 L196 272 H256 L236 402 L316 240 H256 Z"
+    fill="#FFD600" stroke="none"/>
+</svg>

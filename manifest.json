@@ -1,0 +1,18 @@
+{
+  "name": "HIIT Tabata — Francesco",
+  "short_name": "Tabata",
+  "description": "Timer HIIT Tabata personale",
+  "start_url": "./hiit-tabata.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#06060a",
+  "theme_color": "#06060a",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
