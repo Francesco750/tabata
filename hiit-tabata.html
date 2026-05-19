@@ -189,6 +189,7 @@ html, body { height:100%; background:var(--bg); color:var(--text); font-family:'
     <button id="btn-main" onclick="toggleStart()">&#9654; INIZIA</button>
     <button id="btn-skip" class="btn-sq" onclick="skipPhase()" disabled>SALTA &#9197;</button>
     <button id="btn-list" class="btn-sq" onclick="openPanel()" title="Vedi esercizi">&#9783;</button>
+    <button id="btn-wakelock" class="btn-sq" onclick="toggleWakeLock()" title="Schermo sempre acceso (OFF)">&#9728;</button>
     <button id="btn-settings" class="btn-sq" onclick="openSettings()" title="Impostazioni">&#9881;</button>
     <button id="btn-reset" class="btn-sq" onclick="resetAll()" title="Reset">&#8635;</button>
   </div>
@@ -741,6 +742,41 @@ function showGoNum(n) {
   elGoN.textContent = n;
   elGoN.style.animation = 'none'; void elGoN.offsetWidth; elGoN.style.animation = '';
   sfxTick();
+}
+
+/* ════════════════════════════════════
+   WAKE LOCK
+════════════════════════════════════ */
+var wakeLock = null;
+var wakeLockOn = false;
+
+async function toggleWakeLock() {
+  if (!('wakeLock' in navigator)) {
+    alert('Wake Lock non supportato su questo browser.');
+    return;
+  }
+  if (wakeLockOn) {
+    if (wakeLock) { wakeLock.release(); wakeLock = null; }
+    wakeLockOn = false;
+  } else {
+    try {
+      wakeLock = await navigator.wakeLock.request('screen');
+      wakeLockOn = true;
+      wakeLock.addEventListener('release', function() {
+        wakeLockOn = false;
+        renderWakeLockBtn();
+      });
+    } catch(e) { alert('Impossibile attivare Wake Lock: ' + e.message); return; }
+  }
+  renderWakeLockBtn();
+}
+
+function renderWakeLockBtn() {
+  var btn = document.getElementById('btn-wakelock');
+  if (!btn) return;
+  btn.style.borderColor = wakeLockOn ? 'var(--c)' : 'var(--s2)';
+  btn.style.color       = wakeLockOn ? 'var(--c)' : 'var(--dim)';
+  btn.title = wakeLockOn ? 'Schermo sempre acceso (ON)' : 'Schermo sempre acceso (OFF)';
 }
 
 /* ════════════════════════════════════
