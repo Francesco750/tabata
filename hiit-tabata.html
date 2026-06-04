@@ -153,6 +153,20 @@ html, body { height:100%; background:var(--bg); color:var(--text); font-family:'
 .cal-day.worked.today { box-shadow:0 0 0 2px var(--text); }
 .cal-day.empty { pointer-events:none; }
 
+/* ── VIDEO MODAL ── */
+#video-modal { display:none; position:fixed; inset:0; z-index:90; background:rgba(6,6,10,.96); flex-direction:column; align-items:center; justify-content:center; }
+#video-modal.show { display:flex; animation:slideUp .3s cubic-bezier(.22,1,.36,1); }
+.vm-header { width:100%; max-width:430px; display:flex; align-items:center; justify-content:space-between; padding:14px 16px 10px; flex-shrink:0; }
+.vm-title { font-family:'Bebas Neue',sans-serif; font-size:1rem; letter-spacing:.18em; color:var(--c); }
+.vm-close { width:36px; height:36px; border-radius:50%; background:var(--s2); border:none; color:var(--text); font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.vm-frame { width:100%; max-width:430px; padding:0 16px 20px; }
+.vm-frame iframe { width:100%; border-radius:var(--r); border:none; aspect-ratio:16/9; background:#000; }
+.vm-hint { font-size:.48rem; letter-spacing:.12em; color:var(--dim); text-align:center; margin-top:-12px; padding-bottom:8px; }
+.btn-video { display:inline-flex; align-items:center; gap:4px; margin-top:5px; padding:3px 9px; border-radius:20px; background:transparent; border:1px solid var(--dim); color:var(--dim); font-family:'Bebas Neue',sans-serif; font-size:.58rem; letter-spacing:.1em; cursor:pointer; transition:color .2s, border-color .2s; }
+.btn-video:hover, .btn-video:active { color:var(--c); border-color:var(--c); }
+.ep-video-btn { width:34px; height:34px; flex-shrink:0; background:var(--s2); border:1px solid var(--s2); border-radius:50%; color:var(--dim); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:.68rem; transition:color .2s, border-color .2s; }
+.ep-video-btn:hover, .ep-video-btn:active { color:var(--c); border-color:var(--c); }
+
 /* ── SPOTIFY ── */
 #btn-spotify {
   width:100%; height:42px; flex-shrink:0;
@@ -197,6 +211,7 @@ html, body { height:100%; background:var(--bg); color:var(--text); font-family:'
       <div class="ex-name" id="ex-name">JUMPING JACKS</div>
       <div class="ex-sub"  id="ex-sub">ESERCIZIO 1 / 6</div>
       <div class="ex-hint" id="ex-hint">45" LAVORO · 15" PAUSA</div>
+      <button class="btn-video" id="btn-video" onclick="">&#9654; VIDEO</button>
     </div>
     <div class="next-badge" id="next-badge" style="display:none">PROSSIMO</div>
   </div>
@@ -289,6 +304,20 @@ html, body { height:100%; background:var(--bg); color:var(--text); font-family:'
   <div class="done-s">ALLENAMENTO COMPLETATO</div>
   <div class="done-stat">~17 MIN &middot; 6 ESERCIZI &middot; 3 CIRCUITI</div>
   <button id="btn-again" onclick="resetAll()">&#8635; RICOMINCIA</button>
+</div>
+
+<!-- VIDEO MODAL -->
+<div id="video-modal" onclick="handleVideoModalClick(event)">
+  <div class="vm-header">
+    <span class="vm-title" id="vm-title">JUMPING JACKS</span>
+    <button class="vm-close" onclick="closeVideo()">&#10005;</button>
+  </div>
+  <div class="vm-frame" onclick="event.stopPropagation()">
+    <iframe id="vm-iframe" src="" allowfullscreen
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+    </iframe>
+  </div>
+  <div class="vm-hint">tocca fuori dal video per chiudere</div>
 </div>
 
 <div id="flash"></div>
@@ -485,12 +514,12 @@ function svgAirSquat() {
    EXERCISES — workTime per esercizio
 ════════════════════════════════════ */
 var EXERCISES = [
-  { name:'JUMPING JACKS',     num:'1 / 6', workTime:45, svg:svgJacks()    },
-  { name:'MOUNTAIN CLIMBERS', num:'2 / 6', workTime:45, svg:svgClimbers() },
-  { name:'SKIP ALTO',         num:'3 / 6', workTime:45, svg:svgSkipAlto() },
-  { name:'BURPEES',           num:'4 / 6', workTime:45, svg:svgBurpees()  },
-  { name:'PLANK TOCCA SPALLE',num:'5 / 6', workTime:45, svg:svgPlank()    },
-  { name:'AIR SQUAT',         num:'6 / 6', workTime:30, svg:svgAirSquat() },
+  { name:'JUMPING JACKS',     num:'1 / 6', workTime:45, svg:svgJacks(),    videoId:'aoHoBTZb67g' },
+  { name:'MOUNTAIN CLIMBERS', num:'2 / 6', workTime:45, svg:svgClimbers(), videoId:'UTDiO3cgixc' },
+  { name:'SKIP ALTO',         num:'3 / 6', workTime:45, svg:svgSkipAlto(), videoId:'TS-VZDFoZzA' },
+  { name:'BURPEES',           num:'4 / 6', workTime:45, svg:svgBurpees(),  videoId:'uxHFHVVW5Tk' },
+  { name:'PLANK TOCCA SPALLE',num:'5 / 6', workTime:45, svg:svgPlank(),    videoId:'NGZ6tICc3OY' },
+  { name:'AIR SQUAT',         num:'6 / 6', workTime:30, svg:svgAirSquat(), videoId:'XQLmIWrDPnc' },
 ];
 var NX = EXERCISES.length; // 6
 
@@ -569,6 +598,7 @@ function render() {
   elCountNum.textContent = timeLeft;
   elCountNum.classList.toggle('pulse', running && timeLeft <= 3 && timeLeft > 0);
 
+  var btnVideo = document.getElementById('btn-video');
   if (phase === 'idle') {
     var ex = exAt(round);
     elExName.textContent = ex.name;
@@ -580,6 +610,7 @@ function render() {
     elNextLbl.textContent        = 'premi INIZIA per partire';
     elRFg.style.strokeDashoffset = '0';
     setColor('#FFD600');
+    btnVideo.onclick = (function(v,n){ return function(){ openVideo(v,n); }; })(ex.videoId, ex.name);
   } else if (phase === 'work') {
     var ex = exAt(round);
     elExName.textContent = ex.name;
@@ -591,6 +622,7 @@ function render() {
     elNextLbl.textContent  = round >= TOTAL_R-1 ? 'ULTIMO ROUND!' : 'poi \u2192 RIPOSA ' + REST_T + '"';
     setColor('#FFD600');
     updateRing();
+    btnVideo.onclick = (function(v,n){ return function(){ openVideo(v,n); }; })(ex.videoId, ex.name);
   } else if (phase === 'rest') {
     var nxt = exAt(round+1);
     elExName.textContent = nxt.name;
@@ -602,6 +634,7 @@ function render() {
     elNextLbl.textContent  = 'prossimo esercizio';
     setColor('#00E5FF');
     updateRing();
+    btnVideo.onclick = (function(v,n){ return function(){ openVideo(v,n); }; })(nxt.videoId, nxt.name);
   }
 
   buildDots();
@@ -659,6 +692,13 @@ function buildPanel() {
       '<div class="ep-name">' + ex.name + '</div>'
       + '<div class="ep-meta">' + ex.workTime + '" LAVORO \u00B7 ' + REST_T + '" PAUSA \u00B7 3\u00D7</div>';
     item.appendChild(info);
+
+    var vBtn = document.createElement('button');
+    vBtn.className = 'ep-video-btn';
+    vBtn.title     = 'Guarda video';
+    vBtn.innerHTML = '&#9654;';
+    (function(v, n) { vBtn.onclick = function(e) { e.stopPropagation(); openVideo(v, n); }; })(ex.videoId, ex.name);
+    item.appendChild(vBtn);
 
     if (isCurrent) {
       var b = document.createElement('span');
@@ -949,6 +989,23 @@ function renderWakeLockBtn() {
   btn.style.borderColor = wakeLockOn ? 'var(--c)' : 'var(--s2)';
   btn.style.color       = wakeLockOn ? 'var(--c)' : 'var(--dim)';
   btn.title = wakeLockOn ? 'Schermo sempre acceso (ON)' : 'Schermo sempre acceso (OFF)';
+}
+
+/* ════════════════════════════════════
+   VIDEO MODAL
+════════════════════════════════════ */
+function openVideo(videoId, name) {
+  document.getElementById('vm-title').textContent = name;
+  document.getElementById('vm-iframe').src =
+    'https://www.youtube.com/embed/' + videoId + '?rel=0&hl=it&cc_lang_pref=it';
+  document.getElementById('video-modal').classList.add('show');
+}
+function closeVideo() {
+  document.getElementById('vm-iframe').src = '';
+  document.getElementById('video-modal').classList.remove('show');
+}
+function handleVideoModalClick(e) {
+  if (e.target === document.getElementById('video-modal')) closeVideo();
 }
 
 /* ════════════════════════════════════
