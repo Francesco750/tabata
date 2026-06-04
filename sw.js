@@ -1,4 +1,4 @@
-const CACHE = 'tabata-v2';
+const CACHE = 'tabata-v3';
 const ASSETS = [
   'hiit-tabata.html',
   'manifest.json',
