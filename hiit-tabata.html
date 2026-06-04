@@ -162,10 +162,12 @@ html, body { height:100%; background:var(--bg); color:var(--text); font-family:'
 .vm-frame { width:100%; max-width:430px; padding:0 16px 20px; }
 .vm-frame iframe { width:100%; border-radius:var(--r); border:none; aspect-ratio:16/9; background:#000; }
 .vm-hint { font-size:.48rem; letter-spacing:.12em; color:var(--dim); text-align:center; margin-top:-12px; padding-bottom:8px; }
-.btn-video { display:inline-flex; align-items:center; gap:4px; margin-top:5px; padding:3px 9px; border-radius:20px; background:transparent; border:1px solid var(--dim); color:var(--dim); font-family:'Bebas Neue',sans-serif; font-size:.58rem; letter-spacing:.1em; cursor:pointer; transition:color .2s, border-color .2s; }
-.btn-video:hover, .btn-video:active { color:var(--c); border-color:var(--c); }
-.ep-video-btn { width:34px; height:34px; flex-shrink:0; background:var(--s2); border:1px solid var(--s2); border-radius:50%; color:var(--dim); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:.68rem; transition:color .2s, border-color .2s; }
-.ep-video-btn:hover, .ep-video-btn:active { color:var(--c); border-color:var(--c); }
+.btn-video { display:inline-flex; align-items:center; gap:5px; margin-top:7px; padding:5px 12px; border-radius:20px; background:var(--c); border:none; color:#000; font-family:'Bebas Neue',sans-serif; font-size:.7rem; letter-spacing:.12em; cursor:pointer; transition:filter .2s, transform .1s; }
+.btn-video:hover { filter:brightness(1.15); }
+.btn-video:active { transform:scale(.95); }
+.ep-video-btn { width:36px; height:36px; flex-shrink:0; background:var(--c); border:none; border-radius:50%; color:#000; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:.75rem; transition:filter .2s, transform .1s; }
+.ep-video-btn:hover { filter:brightness(1.15); }
+.ep-video-btn:active { transform:scale(.95); }
 
 /* ── SPOTIFY ── */
 #btn-spotify {
